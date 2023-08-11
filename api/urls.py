@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import (ProductViewset, CategoryViewset, UserViewset, FriendListViewset, FriendRequestViewset,
+                    FriendListProductViewset,
                     AdminProductViewset, AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset)
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -28,8 +29,10 @@ router = routers.SimpleRouter()
 router.register('product', ProductViewset, basename='product')
 router.register('category', CategoryViewset, basename='category')
 router.register('user', UserViewset, basename='user')
-router.register('friend/list', FriendListViewset, basename='friend-list')
-router.register('friend/request', FriendRequestViewset, basename='friend-request')
+router.register('friend_list', FriendListViewset, basename='friend-list')
+router.register('friend_list_product', FriendListProductViewset, basename='friend-list-product')
+router.register('friend_request', FriendRequestViewset, basename='friend-request')
+
 
 router.register('admin/user', AdminUserViewset, basename='admin-user')
 router.register('admin/product', AdminProductViewset, basename='admin-product')

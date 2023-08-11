@@ -32,14 +32,6 @@ class FriendListSerializer(serializers.ModelSerializer):
         fields = ['friends']
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source='get_status_display', read_only=True)
-
-    class Meta:
-        model = Product
-        fields = ['id', 'name', 'description', 'date_created', 'date_updated', 'status', 'category', 'owner', 'image']
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -49,4 +41,14 @@ class CategorySerializer(serializers.ModelSerializer):
         if Category.objects.filter(name=value).exists():
             raise serializers.ValidationError('Category already exists')
         return value
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source='get_status_display', read_only=True)
+    owner = UserListSerializer(many=False)
+    category = CategorySerializer(many=False)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'date_created', 'date_updated', 'status', 'category', 'owner', 'image']
 
