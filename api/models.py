@@ -71,36 +71,6 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class Product(models.Model):
-    STATUS = [
-        ("AVAILABLE", "Available"),
-        ("BOOKED", "Booked"),
-        ("ONHOLD", "On Hold"),
-        ("BORROWED", "Borrowed")
-    ]
-
-    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now=True)
-    status = models.CharField(max_length=10, choices=STATUS, default="AVAILABLE")
-    category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='products', default=None)
-    owner = models.ForeignKey('User', on_delete=models.CASCADE, related_name='owner', default=None)
-    image = models.ImageField(upload_to='products/', null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-
-class Category(models.Model):
-    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    name = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.name
-
-
 class FriendList(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user")
