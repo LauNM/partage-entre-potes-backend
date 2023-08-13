@@ -10,5 +10,5 @@ router.register('user', UserViewset, basename='user')
 router.register('admin/user', AdminUserViewset, basename='admin-user')
 
 urlpatterns = [
-     path('api/', include(router.urls)),
+     path('', include(router.urls)),
 ]
