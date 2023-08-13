@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'api',
     'products',
     'friends',
+    'users',
     'rest_framework',
     'rest_framework_simplejwt',
     'django.contrib.admin',
@@ -128,7 +129,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "api.User"
+AUTH_USER_MODEL = "users.User"
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True

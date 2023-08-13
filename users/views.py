@@ -2,7 +2,7 @@ from .models import User
 from .serializers import UserSerializer, UserListSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsAdminAuthenticated
+from api.permissions import IsAdminAuthenticated
 
 """
 ADMIN VIEWSET

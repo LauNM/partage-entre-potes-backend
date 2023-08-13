@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.serializers import UserListSerializer
+from users.serializers import UserListSerializer
 from .models import FriendList, FriendRequest, Notification
 
 

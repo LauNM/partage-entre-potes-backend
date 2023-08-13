@@ -1,5 +1,5 @@
 from django.db import models
-from api.models import User
+from users.models import User
 import uuid
 
 
