@@ -1,9 +1,5 @@
-from .models import Product, Category, User, FriendList, FriendRequest
-from .serializers import (ProductSerializer, CategorySerializer, UserSerializer,
-                          UserListSerializer, FriendListSerializer, FriendRequestSerializer)
 from .models import User, FriendList, FriendRequest
-from .models import Notification
-from products.models import Product, Reservation
+from products.models import Product
 from .serializers import (UserSerializer, UserListSerializer, FriendListSerializer, FriendRequestSerializer)
 from products.serializers import ProductSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
@@ -87,15 +83,6 @@ class FriendListProductViewset(ModelViewSet):
 
         if product.status != 'AVAILABLE':
             return Response({'message': 'Product is not available for reservation'}, status=status.HTTP_400_BAD_REQUEST)
-
-class CategoryViewset(ReadOnlyModelViewSet):
-    serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
-        Reservation.objects.create(product=product, user=user)
-        product.status = 'BOOKED'
-        product.save()
-
-    queryset = Category.objects.all()
 
 
 class FriendListViewset(ModelViewSet):

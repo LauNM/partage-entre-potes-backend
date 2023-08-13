@@ -18,9 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import (ProductViewset, CategoryViewset, UserViewset, FriendListViewset, FriendRequestViewset,
-                    FriendListProductViewset,
-                    AdminProductViewset, AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset)
 from .views import (UserViewset, FriendListViewset, FriendRequestViewset, FriendListProductViewset,
                     AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset)
 from rest_framework import routers
@@ -36,7 +33,6 @@ router.register('friend_request', FriendRequestViewset, basename='friend-request
 
 
 router.register('admin/user', AdminUserViewset, basename='admin-user')
-router.register('admin/product', AdminProductViewset, basename='admin-product')
 router.register('admin/friend/list', AdminFriendListViewset, basename='admin-friend-list')
 router.register('admin/friend/request', AdminFriendRequestViewset, basename='admin-friend-request')
 router.register('admin/friend_list', AdminFriendListViewset, basename='admin-friend-list')

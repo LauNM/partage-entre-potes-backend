@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Category, User, FriendList, FriendRequest
+from products.models import Product, Category
 from .models import User, FriendList, FriendRequest
 
 

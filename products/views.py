@@ -1,5 +1,4 @@
 from .models import Product, Category, Reservation
-from api.models import Notification
 from .serializers import ProductSerializer, CategorySerializer, ReservationSerializer
 
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
