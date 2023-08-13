@@ -26,7 +26,7 @@ class UserManager(BaseUserManager):
 
         return user
 
-    def create_superuser(self, email, first_name, last_name, surname, password=None):
+    def create_superuser(self, email, first_name, last_name, surname=None, password=None):
         user = self.create_user(
             first_name=first_name,
             last_name=last_name,
@@ -57,7 +57,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         if not self.surname:
-            base_surname = self.surname = f"{self.first_name} {self.last_name}".strip()
+            base_surname = self.surname = f"{self.first_name}_{self.last_name}".strip()
             suffix = 1
             generated_surname = base_surname
 

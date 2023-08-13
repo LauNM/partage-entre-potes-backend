@@ -1,5 +1,5 @@
 from .models import FriendList, FriendRequest, Notification
-from api.models import User
+from users.models import User
 from products.models import Product, Reservation
 from .serializers import FriendListSerializer, FriendRequestSerializer, NotificationSerializer
 from products.serializers import ProductSerializer

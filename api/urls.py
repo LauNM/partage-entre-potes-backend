@@ -18,16 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import UserViewset, AdminUserViewset
-from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
-
-router = routers.SimpleRouter()
-
-router.register('user', UserViewset, basename='user')
-
-router.register('admin/user', AdminUserViewset, basename='admin-user')
 
 
 urlpatterns = [
@@ -36,7 +27,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/', include(router.urls)),
+    path('api/', include('users.urls')),
     path('api/', include('products.urls')),
     path('api/', include('friends.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
