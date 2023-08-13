@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from products.models import Product, Category
-from .models import User, FriendList, FriendRequest
+from .models import User, FriendList, FriendRequest, Notification
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,8 +16,8 @@ class UserListSerializer(serializers.ModelSerializer):
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
-    sender = UserListSerializer(many=False)
-    receiver = UserListSerializer(many=False)
+    # sender = UserListSerializer(many=False)
+    # receiver = UserListSerializer(many=False)
 
     class Meta:
         model = FriendRequest
@@ -33,23 +32,7 @@ class FriendListSerializer(serializers.ModelSerializer):
         fields = ['friends']
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = ['id', 'name']
-
-    def validate_name(self, value):
-        if Category.objects.filter(name=value).exists():
-            raise serializers.ValidationError('Category already exists')
-        return value
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    status = serializers.CharField(source='get_status_display', read_only=True)
-    owner = UserListSerializer(many=False)
-    category = CategorySerializer(many=False)
-
-    class Meta:
-        model = Product
-        fields = ['id', 'name', 'description', 'date_created', 'date_updated', 'status', 'category', 'owner', 'image']
-
+        model = Notification
+        field = "__all__"

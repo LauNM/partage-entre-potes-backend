@@ -119,8 +119,8 @@ class FriendRequest(models.Model):
     """
 
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sender")
-    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="receiver")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
     is_active = models.BooleanField(blank=False, null=False, default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -158,3 +158,12 @@ class FriendRequest(models.Model):
         self.is_active = False
         self.save()
 
+
+class Notification(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Notification to {self.user} - {self.content}"

@@ -1,6 +1,6 @@
-from .models import User, FriendList, FriendRequest
-from products.models import Product
-from .serializers import (UserSerializer, UserListSerializer, FriendListSerializer, FriendRequestSerializer)
+from .models import User, FriendList, FriendRequest, Notification
+from products.models import Product, Reservation
+from .serializers import (UserSerializer, UserListSerializer, FriendListSerializer, FriendRequestSerializer, NotificationSerializer)
 from products.serializers import ProductSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework import status
@@ -34,6 +34,13 @@ class AdminFriendListViewset(ModelViewSet):
     permission_classes = [IsAdminAuthenticated]
 
     queryset = FriendList.objects.all()
+
+
+class AdminNotificationViewset(ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    queryset = Notification.objects.all()
 
 
 """
@@ -84,6 +91,18 @@ class FriendListProductViewset(ModelViewSet):
         if product.status != 'AVAILABLE':
             return Response({'message': 'Product is not available for reservation'}, status=status.HTTP_400_BAD_REQUEST)
 
+        Reservation.objects.create(product=product, user=user)
+        product.status = 'BOOKED'
+        product.save()
+
+        # Créez la notification pour le propriétaire du produit
+        Notification.objects.create(
+            user=product.owner,  # Propriétaire du produit
+            content=f"New reservation request for your product '{product.name}' by '{user.surname}",
+        )
+
+        return Response({'message': 'Reservation request submitted successfully'}, status=status.HTTP_201_CREATED)
+
 
 class FriendListViewset(ModelViewSet):
     serializer_class = FriendListSerializer
@@ -111,14 +130,22 @@ class FriendRequestViewset(ModelViewSet):
         receiver = User.objects.get(id=receiver_id)
 
         if sender == receiver:
-            return Response({"detail": "You cannot send a friend request to yourself."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "You cannot send a friend request to yourself."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver, is_active=True).first()
         if existing_request:
-            return Response({"detail": "A friend request to this user is already active."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "A friend request to this user is already active."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         friend_request = FriendRequest(sender=sender, receiver=receiver)
         friend_request.save()
+
+        # Créez la notification pour le receveur
+        Notification.objects.create(
+            user=receiver,
+            content=f"New friend request from '{sender}'",
+        )
 
         return Response({"detail": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
 
@@ -126,7 +153,8 @@ class FriendRequestViewset(ModelViewSet):
         instance = self.get_object()
 
         if instance.sender != request.user and instance.receiver != request.user:
-            return Response({"detail": "You do not have permission to delete this friend request."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "You do not have permission to delete this friend request."},
+                            status=status.HTTP_403_FORBIDDEN)
 
         instance.delete()
 
@@ -142,6 +170,12 @@ class FriendRequestViewset(ModelViewSet):
 
         friend_request.accept()
 
+        # Créez la notification pour le user qui a envoyé la demande d'ami
+        Notification.objects.create(
+            user=request.user,
+            content=f"{friend_request.receiver} accepted your friend request",
+        )
+
         return Response({"detail": "Friend request accepted successfully."}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['post'])
@@ -153,6 +187,12 @@ class FriendRequestViewset(ModelViewSet):
                             status=status.HTTP_403_FORBIDDEN)
 
         friend_request.decline()
+
+        # Créez la notification pour le user qui a envoyé la demande d'ami
+        Notification.objects.create(
+            user=request.user,
+            content=f"{friend_request.receiver} declined your friend request",
+        )
 
         return Response({"detail": "Friend request declined successfully."}, status=status.HTTP_200_OK)
 
@@ -167,3 +207,18 @@ class FriendRequestViewset(ModelViewSet):
         friend_request.cancel()
 
         return Response({"detail": "Friend request canceled successfully."}, status=status.HTTP_200_OK)
+
+
+
+"""
+NOTIFICATION VIEWSET
+"""
+
+
+class NotificationViewset(ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Notification.objects.filter(user=user)

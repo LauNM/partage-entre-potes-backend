@@ -18,8 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import (UserViewset, FriendListViewset, FriendRequestViewset, FriendListProductViewset,
-                    AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset)
+from .views import (UserViewset, FriendListViewset, FriendRequestViewset, FriendListProductViewset, NotificationViewset,
+                    AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset, AdminNotificationViewset)
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -30,6 +30,7 @@ router.register('user', UserViewset, basename='user')
 router.register('friend_list', FriendListViewset, basename='friend-list')
 router.register('friend_list_product', FriendListProductViewset, basename='friend-list-product')
 router.register('friend_request', FriendRequestViewset, basename='friend-request')
+router.register('notification', NotificationViewset, basename='notification')
 
 
 router.register('admin/user', AdminUserViewset, basename='admin-user')
@@ -37,6 +38,7 @@ router.register('admin/friend/list', AdminFriendListViewset, basename='admin-fri
 router.register('admin/friend/request', AdminFriendRequestViewset, basename='admin-friend-request')
 router.register('admin/friend_list', AdminFriendListViewset, basename='admin-friend-list')
 router.register('admin/friend_request', AdminFriendRequestViewset, basename='admin-friend-request')
+router.register('admin/notification', AdminNotificationViewset, basename='admin-notification')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
