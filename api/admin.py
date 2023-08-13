@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import User, FriendList, FriendRequest
+from .models import User, FriendList, FriendRequest, Notification
 
 admin.site.register(User)
+admin.site.register(Notification)
+
 
 
 class FriendListAdmin(admin.ModelAdmin):
