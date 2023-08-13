@@ -18,16 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import (ProductViewset, CategoryViewset, UserViewset, FriendListViewset, FriendRequestViewset,
-                    FriendListProductViewset,
-                    AdminProductViewset, AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset)
+from .views import (UserViewset, FriendListViewset, FriendRequestViewset, FriendListProductViewset,
+                    AdminUserViewset, AdminFriendListViewset, AdminFriendRequestViewset)
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 router = routers.SimpleRouter()
-router.register('product', ProductViewset, basename='product')
-router.register('category', CategoryViewset, basename='category')
+
 router.register('user', UserViewset, basename='user')
 router.register('friend_list', FriendListViewset, basename='friend-list')
 router.register('friend_list_product', FriendListProductViewset, basename='friend-list-product')
@@ -35,9 +33,10 @@ router.register('friend_request', FriendRequestViewset, basename='friend-request
 
 
 router.register('admin/user', AdminUserViewset, basename='admin-user')
-router.register('admin/product', AdminProductViewset, basename='admin-product')
 router.register('admin/friend/list', AdminFriendListViewset, basename='admin-friend-list')
 router.register('admin/friend/request', AdminFriendRequestViewset, basename='admin-friend-request')
+router.register('admin/friend_list', AdminFriendListViewset, basename='admin-friend-list')
+router.register('admin/friend_request', AdminFriendRequestViewset, basename='admin-friend-request')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,5 +45,6 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include(router.urls)),
+    path('api/', include('products.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

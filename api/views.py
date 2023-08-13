@@ -1,6 +1,7 @@
-from .models import Product, Category, User, FriendList, FriendRequest
-from .serializers import (ProductSerializer, CategorySerializer, UserSerializer,
-                          UserListSerializer, FriendListSerializer, FriendRequestSerializer)
+from .models import User, FriendList, FriendRequest
+from products.models import Product
+from .serializers import (UserSerializer, UserListSerializer, FriendListSerializer, FriendRequestSerializer)
+from products.serializers import ProductSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +11,7 @@ from .permissions import IsAdminAuthenticated
 from django.db.models import Q
 
 """
-ADMIN
+ADMIN VIEWSET
 """
 
 
@@ -19,13 +20,6 @@ class AdminUserViewset(ModelViewSet):
     permission_classes = [IsAdminAuthenticated]
 
     queryset = User.objects.all()
-
-
-class AdminProductViewset(ModelViewSet):
-    serializer_class = ProductSerializer
-    permission_classes = [IsAdminAuthenticated]
-
-    queryset = Product.objects.all()
 
 
 class AdminFriendRequestViewset(ModelViewSet):
@@ -43,7 +37,7 @@ class AdminFriendListViewset(ModelViewSet):
 
 
 """
-USER
+USER VIEWSET
 """
 
 
@@ -54,14 +48,9 @@ class UserViewset(ModelViewSet):
     queryset = User.objects.all()
 
 
-class ProductViewset(ModelViewSet):
-    serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]
-
-
-    def get_queryset(self):
-        user = self.request.user
-        return Product.objects.filter(owner=user)
+"""
+FRIEND VIEWSET
+"""
 
 
 class FriendListProductViewset(ModelViewSet):
@@ -87,12 +76,13 @@ class FriendListProductViewset(ModelViewSet):
 
         return products
 
+    @action(detail=True, methods=['post'])
+    def request_reservation(self, request, pk=None):
+        product = self.get_object()  # Obtient le produit concerné
+        user = request.user
 
-class CategoryViewset(ReadOnlyModelViewSet):
-    serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated]
-
-    queryset = Category.objects.all()
+        if product.status != 'AVAILABLE':
+            return Response({'message': 'Product is not available for reservation'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FriendListViewset(ModelViewSet):

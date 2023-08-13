@@ -1,8 +1,6 @@
 from django.contrib import admin
-from .models import Product, User, Category, FriendList, FriendRequest
+from .models import User, FriendList, FriendRequest
 
-admin.site.register(Product)
-admin.site.register(Category)
 admin.site.register(User)
 
 
