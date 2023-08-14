@@ -43,17 +43,14 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, unique=True)
-    password = models.CharField(max_length=255)
     surname = models.CharField(max_length=255, blank=True, unique=True)
     username = None
 
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name", "last_name", "password"]
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     def save(self, *args, **kwargs):
         if not self.surname:
