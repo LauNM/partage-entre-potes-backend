@@ -1,3 +1,4 @@
+from friends.models import Notification
 from .models import Product, Category, Reservation
 from .serializers import ProductSerializer, CategorySerializer, ReservationSerializer
 
@@ -50,12 +51,15 @@ class ProductViewset(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Product.objects.filter(owner=user)
+        if user.is_authenticated:
+            return Product.objects.filter(owner=user)
+        else:
+            return Product.objects.none()
 
 
 class ReservationViewset(ModelViewSet):
     serializer_class = ReservationSerializer
-    permission_class = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post'])
     def accept_request(self, request, pk=None):
@@ -110,3 +114,10 @@ class ReservationViewset(ModelViewSet):
         )
 
         return Response({'message': 'Reservation request declined'}, status=status.HTTP_200_OK)
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return Reservation.objects.filter(user=user)
+        else:
+            return Reservation.objects.none()

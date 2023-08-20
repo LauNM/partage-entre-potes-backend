@@ -48,22 +48,25 @@ class FriendListProductViewset(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        friends = FriendList.objects.get(user=user).friends.all()
-        products = Product.objects.filter(owner__in=friends)
+        if user.is_authenticated:
+            friends = FriendList.objects.get(user=user).friends.all()
+            products = Product.objects.filter(owner__in=friends)
 
-        owner = self.request.query_params.get('owner')
-        if owner:
-            products = products.filter(owner=owner)
+            owner = self.request.query_params.get('owner')
+            if owner:
+                products = products.filter(owner=owner)
 
-        status = self.request.query_params.get('status')
-        if status:
-            products = products.filter(status=status)
+            status = self.request.query_params.get('status')
+            if status:
+                products = products.filter(status=status)
 
-        category = self.request.query_params.get('category')
-        if category:
-            products = products.filter(category=category)
+            category = self.request.query_params.get('category')
+            if category:
+                products = products.filter(category=category)
 
-        return products
+            return products
+        else:
+            return Product.objects.none()
 
     @action(detail=True, methods=['post'])
     def request_reservation(self, request, pk=None):
@@ -92,7 +95,10 @@ class FriendListViewset(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return FriendList.objects.filter(user=user)
+        if user.is_authenticated:
+            return FriendList.objects.filter(user=user)
+        else:
+            return FriendList.objects.none()
 
 
 class FriendRequestViewset(ModelViewSet):
@@ -101,7 +107,10 @@ class FriendRequestViewset(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return FriendRequest.objects.filter(Q(sender=user) | Q(receiver=user))
+        if user.is_authenticated:
+            return FriendRequest.objects.filter(Q(sender=user) | Q(receiver=user))
+        else:
+            return FriendRequest.objects.none()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -204,4 +213,7 @@ class NotificationViewset(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Notification.objects.filter(user=user)
+        if user.is_authenticated:
+            return Notification.objects.filter(user=user)
+        else:
+            return Notification.objects.none()
