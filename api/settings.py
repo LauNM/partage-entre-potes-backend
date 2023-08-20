@@ -137,3 +137,14 @@ CORS_ALLOW_CREDENTIALS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+SWAGGER_SETTINGS = {
+  'SECURITY_DEFINITIONS': {
+     'DRF Token': {
+           'type': 'apiKey',
+           'name': 'Authorization',
+           'in': 'header'
+     }
+  }
+}
