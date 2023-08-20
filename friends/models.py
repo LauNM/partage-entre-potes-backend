@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from users.models import User
 import uuid
 
@@ -51,8 +52,8 @@ class FriendRequest(models.Model):
     """
 
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="receiver")
     is_active = models.BooleanField(blank=False, null=False, default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -107,8 +107,10 @@ class FriendRequestViewset(ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        sender = request.user
+        sender_id = serializer.validated_data['sender']
         receiver_id = serializer.validated_data['receiver']
+
+        sender = User.objects.get(id=sender_id)
         receiver = User.objects.get(id=receiver_id)
 
         if sender == receiver:
