@@ -23,5 +23,5 @@ class FriendListSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        field = "__all__"
+        fields = "__all__"
 
