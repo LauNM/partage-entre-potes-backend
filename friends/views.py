@@ -129,7 +129,12 @@ class FriendRequestViewset(ModelViewSet):
             return Response({"detail": "You cannot send a friend request to yourself."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver, is_active=True).first()
+        sender_friend_list = FriendList.objects.get(user=sender)
+        if sender_friend_list.is_mutual_friend(receiver):
+            return Response({"detail": "You are already friends with this user."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver).first()
         if existing_request:
             return Response({"detail": "A friend request to this user is already active."},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -140,7 +145,8 @@ class FriendRequestViewset(ModelViewSet):
         # Créez la notification pour le receveur
         Notification.objects.create(
             user=receiver,
-            content=f"New friend request from '{sender}'",
+            friend_request=friend_request,
+            content=f"New friend request from '{sender.surname}'",
         )
 
         return Response({"detail": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
@@ -168,7 +174,7 @@ class FriendRequestViewset(ModelViewSet):
 
         # Créez la notification pour le user qui a envoyé la demande d'ami
         Notification.objects.create(
-            user=request.user,
+            user=friend_request.sender,
             content=f"{friend_request.receiver} accepted your friend request",
         )
 
@@ -186,7 +192,7 @@ class FriendRequestViewset(ModelViewSet):
 
         # Créez la notification pour le user qui a envoyé la demande d'ami
         Notification.objects.create(
-            user=request.user,
+            user=friend_request.sender,
             content=f"{friend_request.receiver} declined your friend request",
         )
 
@@ -218,6 +224,6 @@ class NotificationViewset(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            return Notification.objects.filter(user=user)
+            return Notification.objects.filter(user=user.id)
         else:
             return Notification.objects.none()
