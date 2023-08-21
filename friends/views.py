@@ -45,6 +45,7 @@ FRIEND VIEWSET
 class FriendListProductViewset(ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get']
 
     def get_queryset(self):
         user = self.request.user
@@ -92,6 +93,7 @@ class FriendListProductViewset(ModelViewSet):
 class FriendListViewset(ModelViewSet):
     serializer_class = FriendListSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         user = self.request.user
@@ -104,6 +106,7 @@ class FriendListViewset(ModelViewSet):
 class FriendRequestViewset(ModelViewSet):
     serializer_class = FriendRequestSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         user = self.request.user
@@ -210,6 +213,7 @@ NOTIFICATION VIEWSET
 class NotificationViewset(ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get']
 
     def get_queryset(self):
         user = self.request.user
