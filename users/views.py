@@ -5,6 +5,7 @@ from .serializers import UserSerializer, UserListSerializer, RegisterSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.permissions import IsAdminAuthenticated, IsOwnerOrReadOnly
+from rest_framework import filters
 
 """
 ADMIN VIEWSET
@@ -38,6 +39,8 @@ class UserViewset(ModelViewSet):
     serializer_class = UserListSerializer
     permission_classes = [IsAuthenticated & IsOwnerOrReadOnly]
     http_method_names = ['get', 'patch', 'delete']
+    filter_backends = [filters.OrderingFilter]
+    search_fields = ['surname']
 
     queryset = User.objects.all()
 
