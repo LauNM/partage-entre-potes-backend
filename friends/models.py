@@ -1,6 +1,15 @@
 from django.db import models
+from products.models import Reservation
 from users.models import User
 import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
+@receiver(post_save, sender=User)
+def create_friend_list(sender, instance, created, **kwargs):
+    if created:
+        FriendList.objects.create(user=instance)
 
 
 class FriendList(models.Model):
@@ -53,7 +62,6 @@ class FriendRequest(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
-    is_active = models.BooleanField(blank=False, null=False, default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -64,36 +72,33 @@ class FriendRequest(models.Model):
         Accept a friend request.
         Update both SENDER and RECEIVER friend lists.
         """
-        receiver_friend_list = FriendList.objects.get(user=self.receiver)
-        if receiver_friend_list:
-            receiver_friend_list.add_friend(self.sender)
-            sender_friend_list = FriendList.objects.get(user=self.sender)
-            if sender_friend_list:
-                sender_friend_list.add_friend(self.receiver)
-                self.is_active = False
-                self.save()
+        receiver_friend_list, _ = FriendList.objects.get_or_create(user=self.receiver)
+        receiver_friend_list.add_friend(self.sender)
+
+        sender_friend_list, _ = FriendList.objects.get_or_create(user=self.sender)
+        sender_friend_list.add_friend(self.receiver)
+
+        self.delete()
 
     def decline(self):
         """
         Decline a friend request.
-        Is it "declined" by setting the `is_active` field to False
         """
-        self.is_active = False
-        self.save()
+        self.delete()
 
     def cancel(self):
         """
         Cancel a friend request.
-        Is it "cancelled" by setting the `is_active` field to False.
         This is only different with respect to "declining" through the notification that is generated.
         """
-        self.is_active = False
-        self.save()
+        self.delete()
 
 
 class Notification(models.Model):
     id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE, null=True, blank=True, )
+    friend_request = models.ForeignKey(FriendRequest, on_delete=models.CASCADE, null=True, blank=True, )
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 

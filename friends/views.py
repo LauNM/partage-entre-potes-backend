@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from api.permissions import IsAdminAuthenticated
 from django.db.models import Q
+from django.utils.translation import gettext as _
+
 
 """
 ADMIN VIEWSET
@@ -45,6 +47,7 @@ FRIEND VIEWSET
 class FriendListProductViewset(ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get']
 
     def get_queryset(self):
         user = self.request.user
@@ -83,7 +86,8 @@ class FriendListProductViewset(ModelViewSet):
         # Créez la notification pour le propriétaire du produit
         Notification.objects.create(
             user=product.owner,  # Propriétaire du produit
-            content=f"New reservation request for your product '{product.name}' by '{user.surname}",
+            content=_("New reservation request for your product '{product}' by '{user}'").format(
+                product=product.name, user=user.surname),
         )
 
         return Response({'message': 'Reservation request submitted successfully'}, status=status.HTTP_201_CREATED)
@@ -92,6 +96,7 @@ class FriendListProductViewset(ModelViewSet):
 class FriendListViewset(ModelViewSet):
     serializer_class = FriendListSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         user = self.request.user
@@ -104,6 +109,7 @@ class FriendListViewset(ModelViewSet):
 class FriendRequestViewset(ModelViewSet):
     serializer_class = FriendRequestSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         user = self.request.user
@@ -116,15 +122,22 @@ class FriendRequestViewset(ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        sender = request.user
+        sender_id = serializer.validated_data['sender']
         receiver_id = serializer.validated_data['receiver']
+
+        sender = User.objects.get(id=sender_id)
         receiver = User.objects.get(id=receiver_id)
 
         if sender == receiver:
             return Response({"detail": "You cannot send a friend request to yourself."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver, is_active=True).first()
+        sender_friend_list = FriendList.objects.get(user=sender)
+        if sender_friend_list.is_mutual_friend(receiver):
+            return Response({"detail": "You are already friends with this user."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver).first()
         if existing_request:
             return Response({"detail": "A friend request to this user is already active."},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -135,7 +148,8 @@ class FriendRequestViewset(ModelViewSet):
         # Créez la notification pour le receveur
         Notification.objects.create(
             user=receiver,
-            content=f"New friend request from '{sender}'",
+            friend_request=friend_request,
+            content=_("New friend request from '{sender}'").format(sender=sender.surname),
         )
 
         return Response({"detail": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
@@ -163,8 +177,8 @@ class FriendRequestViewset(ModelViewSet):
 
         # Créez la notification pour le user qui a envoyé la demande d'ami
         Notification.objects.create(
-            user=request.user,
-            content=f"{friend_request.receiver} accepted your friend request",
+            user=friend_request.sender,
+            content=_("{receiver} accepted your friend request").format(receiver=friend_request.receiver.surname),
         )
 
         return Response({"detail": "Friend request accepted successfully."}, status=status.HTTP_200_OK)
@@ -181,8 +195,8 @@ class FriendRequestViewset(ModelViewSet):
 
         # Créez la notification pour le user qui a envoyé la demande d'ami
         Notification.objects.create(
-            user=request.user,
-            content=f"{friend_request.receiver} declined your friend request",
+            user=friend_request.sender,
+            content=_("{receiver} declined your friend request").format(receiver=friend_request.receiver.surname),
         )
 
         return Response({"detail": "Friend request declined successfully."}, status=status.HTTP_200_OK)
@@ -208,10 +222,11 @@ NOTIFICATION VIEWSET
 class NotificationViewset(ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            return Notification.objects.filter(user=user)
+            return Notification.objects.filter(user=user.id)
         else:
             return Notification.objects.none()
