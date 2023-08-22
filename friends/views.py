@@ -10,6 +10,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from api.permissions import IsAdminAuthenticated
 from django.db.models import Q
+from django.utils.translation import gettext as _
+
 
 """
 ADMIN VIEWSET
@@ -84,7 +86,8 @@ class FriendListProductViewset(ModelViewSet):
         # Créez la notification pour le propriétaire du produit
         Notification.objects.create(
             user=product.owner,  # Propriétaire du produit
-            content=f"New reservation request for your product '{product.name}' by '{user.surname}",
+            content=_("New reservation request for your product '{product}' by '{user}'").format(
+                product=product.name, user=user.surname),
         )
 
         return Response({'message': 'Reservation request submitted successfully'}, status=status.HTTP_201_CREATED)
@@ -146,7 +149,7 @@ class FriendRequestViewset(ModelViewSet):
         Notification.objects.create(
             user=receiver,
             friend_request=friend_request,
-            content=f"New friend request from '{sender.surname}'",
+            content=_("New friend request from '{sender}'").format(sender=sender.surname),
         )
 
         return Response({"detail": "Friend request sent successfully."}, status=status.HTTP_201_CREATED)
@@ -175,7 +178,7 @@ class FriendRequestViewset(ModelViewSet):
         # Créez la notification pour le user qui a envoyé la demande d'ami
         Notification.objects.create(
             user=friend_request.sender,
-            content=f"{friend_request.receiver} accepted your friend request",
+            content=_("{receiver} accepted your friend request").format(receiver=friend_request.receiver.surname),
         )
 
         return Response({"detail": "Friend request accepted successfully."}, status=status.HTTP_200_OK)
@@ -193,7 +196,7 @@ class FriendRequestViewset(ModelViewSet):
         # Créez la notification pour le user qui a envoyé la demande d'ami
         Notification.objects.create(
             user=friend_request.sender,
-            content=f"{friend_request.receiver} declined your friend request",
+            content=_("{receiver} declined your friend request").format(receiver=friend_request.receiver.surname),
         )
 
         return Response({"detail": "Friend request declined successfully."}, status=status.HTTP_200_OK)
