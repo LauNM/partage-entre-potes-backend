@@ -2,7 +2,14 @@ from django.db import models
 from products.models import Reservation
 from users.models import User
 import uuid
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
 @receiver(post_save, sender=User)
+def create_friend_list(sender, instance, created, **kwargs):
+    if created:
+        FriendList.objects.create(user=instance)
 
 
 class FriendList(models.Model):
