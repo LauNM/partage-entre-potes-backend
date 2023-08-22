@@ -2,7 +2,7 @@ from .models import FriendList, FriendRequest, Notification
 from users.models import User
 from products.models import Product, Reservation
 from .serializers import FriendListSerializer, FriendRequestSerializer, NotificationSerializer
-from products.serializers import ProductSerializer
+from products.serializers import FriendListProductSerializer
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -45,7 +45,7 @@ FRIEND VIEWSET
 
 
 class FriendListProductViewset(ModelViewSet):
-    serializer_class = ProductSerializer
+    serializer_class = FriendListProductSerializer
     permission_classes = [IsAuthenticated]
     http_method_names = ['get']
 
