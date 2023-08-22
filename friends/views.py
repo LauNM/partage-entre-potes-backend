@@ -11,6 +11,9 @@ from rest_framework.decorators import action
 from api.permissions import IsAdminAuthenticated
 from django.db.models import Q
 from django.utils.translation import gettext as _
+from rest_framework import filters
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 """
@@ -48,6 +51,10 @@ class FriendListProductViewset(ModelViewSet):
     serializer_class = FriendListProductSerializer
     permission_classes = [IsAuthenticated]
     http_method_names = ['get']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['owner__surname', 'status', 'category']
+    search_fields = ['owner__surname', 'name', 'description']
+    ordering = ['category']
 
     def get_queryset(self):
         user = self.request.user
@@ -70,6 +77,21 @@ class FriendListProductViewset(ModelViewSet):
             return products
         else:
             return Product.objects.none()
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            name='ordering',
+            in_=openapi.IN_QUERY,
+            description='Select a field to order the results by.',
+            type=openapi.TYPE_STRING,
+            enum=ordering_fields,
+            required=False,
+            example='category'
+        ),
+    ])
+    def list(self, request, *args, **kwargs):
+        # Votre logique de récupération de liste
+        return super().list(request, *args, **kwargs)
 
     @action(detail=True, methods=['post'])
     def request_reservation(self, request, pk=None):

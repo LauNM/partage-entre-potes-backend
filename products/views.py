@@ -11,6 +11,9 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils.translation import gettext as _
+from rest_framework import filters
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 """
 ADMIN VIEWSET
@@ -51,6 +54,10 @@ PRODUCT AND RESERVATION VIEWSET
 class ProductViewset(ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['status', 'category']
+    search_fields = ['name', 'description']
+    ordering = ['category']
 
     def get_queryset(self):
         user = self.request.user
@@ -58,6 +65,21 @@ class ProductViewset(ModelViewSet):
             return Product.objects.filter(owner=user)
         else:
             return Product.objects.none()
+
+    @swagger_auto_schema(manual_parameters=[
+        openapi.Parameter(
+            name='ordering',
+            in_=openapi.IN_QUERY,
+            description='Select a field to order the results by.',
+            type=openapi.TYPE_STRING,
+            enum=ordering_fields,
+            required=False,
+            example='category'  # Exemple de champ de tri par défaut
+        ),
+    ])
+    def list(self, request, *args, **kwargs):
+        # Votre logique de récupération de liste
+        return super().list(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
