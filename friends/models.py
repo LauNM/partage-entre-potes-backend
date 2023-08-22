@@ -2,6 +2,7 @@ from django.db import models
 from products.models import Reservation
 from users.models import User
 import uuid
+@receiver(post_save, sender=User)
 
 
 class FriendList(models.Model):
