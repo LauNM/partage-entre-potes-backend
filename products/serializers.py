@@ -14,18 +14,41 @@ class CategorySerializer(serializers.ModelSerializer):
         return value
 
 
+class CategoryField(serializers.PrimaryKeyRelatedField):
+    def to_representation(self, value):
+        category = Category.objects.get(pk=value.pk)
+        return {
+            'id': category.id,
+            'name': category.name
+        }
+
+
 class ProductSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='get_status_display', read_only=True)
-    owner = UserListSerializer(many=False)
-    category = CategorySerializer(many=False)
+    category = CategoryField(queryset=Category.objects.all())
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'description', 'date_created', 'date_updated', 'status', 'category', 'owner', 'image']
 
 
+class ProductField(serializers.PrimaryKeyRelatedField):
+    def to_representation(self, value):
+        product = Product.objects.get(pk=value.pk)
+        return {
+            'id': product.id,
+            'name': product.name,
+            'owner_id': product.owner.id,
+            'owner_surname': product.owner.surname,
+            'status': product.status
+        }
+
+
 class ReservationSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(source='get_status_display', read_only=True)
+    product = ProductField(queryset=Product.objects.all())
+
     class Meta:
         model = Reservation
-        fields = "__all__"
+        fields = ['id', 'product', 'requester', 'status', 'created_at']
 
