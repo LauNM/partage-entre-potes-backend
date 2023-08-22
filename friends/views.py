@@ -219,7 +219,7 @@ NOTIFICATION VIEWSET
 class NotificationViewset(ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
-    http_method_names = ['get']
+    http_method_names = ['get', 'delete']
 
     def get_queryset(self):
         user = self.request.user

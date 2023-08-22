@@ -4,8 +4,8 @@ from .models import FriendList, FriendRequest, Notification
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
-    sender = serializers.UUIDField()
-    receiver = serializers.UUIDField()
+    sender = serializers.StringRelatedField(source='sender.surname')
+    receiver = serializers.StringRelatedField(source='receiver.surname')
 
     class Meta:
         model = FriendRequest
@@ -23,5 +23,5 @@ class FriendListSerializer(serializers.ModelSerializer):
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = "__all__"
+        fields = ['id', 'user', 'reservation', 'friend_request', 'content', 'created_at']
 
