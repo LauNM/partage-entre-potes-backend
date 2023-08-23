@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-21 21:40+0000\n"
+"POT-Creation-Date: 2023-08-23 16:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,30 +18,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: api/settings.py:126
-msgid "English"
-msgstr "Anglas"
-
 #: api/settings.py:127
+msgid "English"
+msgstr "Anglais"
+
+#: api/settings.py:128
 msgid "French"
 msgstr "Français"
 
-#: friends/views.py:89
-#, python-brace-format
-msgid "New reservation request for your product '{product}' by '{user}'"
-msgstr "Nouvelle demande de réservation pour votre produit '{product}' par '{use}'"
-
-#: friends/views.py:152
+#: friends/views.py:153
 #, python-brace-format
 msgid "New friend request from '{sender}'"
 msgstr "Nouvelle demande d'ami de '{sender}'"
 
-#: friends/views.py:181
+#: friends/views.py:182
 #, python-brace-format
 msgid "{receiver} accepted your friend request"
 msgstr "{receiver} a accepté votre demande d'ami"
 
-#: friends/views.py:199
+#: friends/views.py:200
 #, python-brace-format
 msgid "{receiver} declined your friend request"
 msgstr "{receiver} a décliné votre demande d'ami"
+
+#: products/views.py:124
+#, python-brace-format
+msgid "New reservation from '{requester}' for '{product}'"
+msgstr ""
+"Nouvelle demande de réservation de '{requester}' pour votre '{product}'"
+
+#: products/views.py:152
+#, python-brace-format
+msgid "Your reservation request for '{product}' has been accepted."
+msgstr "Votre demande de reservation pour '{product}' a été acceptée."
+
+#: products/views.py:179
+#, python-brace-format
+msgid "Your reservation request for '{product}' has been declined."
+msgstr "Votre demande de reservation pour '{product}' a été déclinée."
