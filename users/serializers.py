@@ -52,6 +52,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'date_joined', 'first_name',
+                  'last_name', 'email', 'password', 'surname']
+
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -66,3 +73,33 @@ class UserListSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'surname']
 
+
+class UpdateUserProfileSerializer(serializers.ModelSerializer):
+    old_password = serializers.CharField(write_only=True, required=False)
+    new_password = serializers.CharField(write_only=True, required=False)
+    confirm_new_password = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'surname', 'old_password', 'new_password',
+                  'confirm_new_password']
+        extra_kwargs = {
+            'email': {'required': False},
+        }
+
+    def update(self, instance, validated_data):
+        old_password = validated_data.pop('old_password', None)
+        new_password = validated_data.pop('new_password', None)
+        confirm_new_password = validated_data.pop('confirm_new_password', None)
+
+        if old_password and new_password and confirm_new_password:
+            if instance.check_password(old_password) and new_password == confirm_new_password:
+                instance.set_password(new_password)
+            else:
+                raise serializers.ValidationError({'password': 'Incorrect old password or new passwords do not match.'})
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
