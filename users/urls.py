@@ -7,8 +7,8 @@ from .views import (UserViewset, AdminUserViewset, RegisterView,
 router = routers.SimpleRouter()
 
 router.register('user', UserViewset, basename='user')
-router.register('user/profile', UserProfileViewset, basename='profile')
-router.register('user/profile/update', UpdateUserProfileViewset, basename='update_profile')
+router.register('profile', UserProfileViewset, basename='profile')
+router.register('profile/update', UpdateUserProfileViewset, basename='update_profile')
 
 
 router.register('admin/user', AdminUserViewset, basename='admin-user')

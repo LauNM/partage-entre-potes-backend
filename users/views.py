@@ -52,14 +52,12 @@ class UserProfileViewset(ModelViewSet):
     permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'delete']
 
-    queryset = User.objects.all()
-
-    """def get_queryset(self):
+    def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
             return User.objects.filter(id=user.id)
         else:
-            return User.objects.none()"""
+            return User.objects.none()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
