@@ -53,6 +53,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         fields = ['id', 'date_joined', 'first_name',
@@ -103,3 +105,7 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class ResetPasswordEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)

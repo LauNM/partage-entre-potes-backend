@@ -93,27 +93,6 @@ class FriendListProductViewset(ModelViewSet):
         # Votre logique de récupération de liste
         return super().list(request, *args, **kwargs)
 
-    @action(detail=True, methods=['post'])
-    def request_reservation(self, request, pk=None):
-        product = self.get_object()  # Obtient le produit concerné
-        user = request.user
-
-        if product.status != 'AVAILABLE':
-            return Response({'message': 'Product is not available for reservation'}, status=status.HTTP_400_BAD_REQUEST)
-
-        Reservation.objects.create(product=product, user=user)
-        product.status = 'BOOKED'
-        product.save()
-
-        # Créez la notification pour le propriétaire du produit
-        Notification.objects.create(
-            user=product.owner,  # Propriétaire du produit
-            content=_("New reservation request for your product '{product}' by '{user}'").format(
-                product=product.name, user=user.surname),
-        )
-
-        return Response({'message': 'Reservation request submitted successfully'}, status=status.HTTP_201_CREATED)
-
 
 class FriendListViewset(ModelViewSet):
     serializer_class = FriendListSerializer

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'drf_yasg',
     'django_filters',
+    'django_rest_passwordreset',
 ]
 
 REST_FRAMEWORK = {
@@ -69,7 +70,7 @@ ROOT_URLCONF = 'api.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR, 'templates/', ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -150,13 +151,21 @@ CORS_ALLOW_CREDENTIALS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
 SWAGGER_SETTINGS = {
-  'SECURITY_DEFINITIONS': {
-     'DRF Token': {
-           'type': 'apiKey',
-           'name': 'Authorization',
-           'in': 'header'
-     }
-  }
+    'SECURITY_DEFINITIONS': {
+        'DRF Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 }
+
+# Email Config
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '7f13783d3c682e'
+EMAIL_HOST_PASSWORD = '72cd47b89ff44a'
+EMAIL_PORT = '2525'
+EMAIL_USE_TLS = True
+EMAIL_TIMEOUT = 300  # in seconds
+DEFAULT_FROM_EMAIL = 'No Reply <noreply@partageentrepotes.com>'
