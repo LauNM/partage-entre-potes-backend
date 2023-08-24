@@ -1,13 +1,13 @@
-from rest_framework import status, generics
+from rest_framework import status, generics, filters
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 from django.contrib.auth.hashers import make_password
 from .models import User
 from .serializers import (UserSerializer, UserListSerializer, RegisterSerializer, UserProfileSerializer,
                           UpdateUserProfileSerializer)
-from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
-from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.permissions import IsAdminAuthenticated, IsOwnerOrReadOnly
-from rest_framework import filters
-from rest_framework.response import Response
 
 """
 ADMIN VIEWSET
@@ -49,15 +49,17 @@ class UserViewset(ModelViewSet):
 
 class UserProfileViewset(ModelViewSet):
     serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated & IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated]
     http_method_names = ['get', 'delete']
 
-    def get_queryset(self):
+    queryset = User.objects.all()
+
+    """def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
             return User.objects.filter(id=user.id)
         else:
-            return User.objects.none()
+            return User.objects.none()"""
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

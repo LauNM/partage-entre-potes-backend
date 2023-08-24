@@ -106,12 +106,13 @@ class ReservationViewset(ModelViewSet):
 
         product_id = serializer.validated_data['product'].id
         product = get_object_or_404(Product, id=product_id)
+        requester = self.request.user
 
         if product.status != 'AVAILABLE':
             return Response({"detail": "The selected product is not available for reservation."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        reservation = Reservation(product=product, requester=self.request.user)
+        reservation = Reservation(product=product, requester=requester)
         reservation.save()
 
         product.status = 'BOOKED'
@@ -121,7 +122,7 @@ class ReservationViewset(ModelViewSet):
             user=product.owner,
             reservation=reservation,
             content=_("New reservation from '{requester}' for '{product}'").format(
-                requester=self.request.user.surname, product=product.name),
+                requester=requester, product=product.name),
         )
 
         return Response({"detail": "Reservation sent successfully."}, status=status.HTTP_201_CREATED)

@@ -103,3 +103,7 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class ResetPasswordEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
