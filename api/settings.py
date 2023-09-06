@@ -15,7 +15,11 @@ from django.utils.translation import gettext_lazy as _
 import os
 import environ
 
-env = environ.Env()
+env = environ.Env(
+    # set casting, default value
+    DATABASE_NAME= (str, 'db.sqlite3'),
+    FRONTEND_BASE_URL =(str, 'http://localhost:3000')
+)
 environ.Env.read_env()
 
 
@@ -181,3 +185,5 @@ EMAIL_PORT = '2525'
 EMAIL_USE_TLS = True
 EMAIL_TIMEOUT = 300  # in seconds
 DEFAULT_FROM_EMAIL = 'No Reply <noreply@partageentrepotes.com>'
+
+FRONTEND_BASE_URL = env('FRONTEND_BASE_URL')
