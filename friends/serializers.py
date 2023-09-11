@@ -4,8 +4,11 @@ from .models import FriendList, FriendRequest, Notification
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
-    sender = serializers.StringRelatedField(source='sender.surname')
+    """sender = serializers.StringRelatedField(source='sender.surname')
     receiver = serializers.StringRelatedField(source='receiver.surname')
+    """
+    sender = serializers.UUIDField()
+    receiver = serializers.UUIDField()
 
     class Meta:
         model = FriendRequest

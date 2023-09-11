@@ -5,9 +5,9 @@ from rest_framework import routers
 
 router = routers.SimpleRouter()
 
-router.register('friend_list', FriendListViewset, basename='friend-list')
-router.register('friend_list/product', FriendListProductViewset, basename='friend-list-product')
-router.register('friend_list/request', FriendRequestViewset, basename='friend-request')
+router.register('friend/list', FriendListViewset, basename='friend-list')
+router.register('friend/product', FriendListProductViewset, basename='friend-product')
+router.register('friend/request', FriendRequestViewset, basename='friend-request')
 router.register('notification', NotificationViewset, basename='notification')
 
 router.register('admin/friend/list', AdminFriendListViewset, basename='admin-friend-list')
