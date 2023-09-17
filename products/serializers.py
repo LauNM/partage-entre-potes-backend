@@ -46,15 +46,14 @@ class ProductSerializer(serializers.ModelSerializer):
                   'image']
 
     def get_reservation(self, obj):
-        reservation = obj.get_reservation()  # Remplacez par la méthode correcte pour obtenir la réservation
+        reservation = Reservation.objects.filter(product=obj).first()
         if reservation:
-            if reservation:
-                return {
-                    'id': reservation.id,
-                    'requester_id': reservation.requester.id,
-                    'requester_surname': reservation.requester.surname,
-                    'created_at': reservation.created_at
-                }
+            return {
+                'id': reservation.id,
+                'requester_id': reservation.requester.id,
+                'requester_name': reservation.requester.surname,
+                'created_at': reservation.created_at
+            }
         return None
 
 
@@ -62,11 +61,23 @@ class FriendListProductSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source='get_status_display', read_only=True)
     category = CategoryField(queryset=Category.objects.all())
     owner = UserField(queryset=User.objects.all())
+    reservation = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'date_created', 'date_updated', 'status', 'category',
+        fields = ['id', 'name', 'description', 'date_created', 'date_updated', 'status', 'category', 'reservation',
                   'owner', 'image']
+
+    def get_reservation(self, obj):
+        reservation = Reservation.objects.filter(product=obj).first()
+        if reservation:
+            return {
+                'id': reservation.id,
+                'requester_id': reservation.requester.id,
+                'requester_name': reservation.requester.surname,
+                'created_at': reservation.created_at
+            }
+        return None
 
 
 class ProductField(serializers.PrimaryKeyRelatedField):
