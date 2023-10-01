@@ -17,8 +17,8 @@ import environ
 
 env = environ.Env(
     # set casting, default value
-    DATABASE_NAME= (str, 'db.sqlite3'),
-    FRONTEND_BASE_URL =(str, 'http://localhost:3000')
+    DATABASE_NAME=(str, 'db.sqlite3'),
+    FRONTEND_BASE_URL=(str, 'http://localhost:3000')
 )
 environ.Env.read_env()
 
