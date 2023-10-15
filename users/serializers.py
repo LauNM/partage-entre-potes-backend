@@ -109,3 +109,9 @@ class UpdateUserProfileSerializer(serializers.ModelSerializer):
 
 class ResetPasswordEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
+
+class UserSummarySerializer(serializers.Serializer):
+    total_friends = serializers.IntegerField()
+    total_products = serializers.IntegerField()
+    total_friends_products = serializers.IntegerField()

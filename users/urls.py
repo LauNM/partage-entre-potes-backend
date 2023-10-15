@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 from .views import (UserViewset, AdminUserViewset, RegisterView,
-                    UserProfileViewset, UpdateUserProfileViewset)
+                    UserProfileViewset, UpdateUserProfileViewset, UserSummaryView)
 
 
 router = routers.SimpleRouter()
@@ -16,5 +16,6 @@ router.register('admin/user', AdminUserViewset, basename='admin-user')
 urlpatterns = [
      path('register/', RegisterView.as_view(), name='auth_register'),
      path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+     path('profile/summary/', UserSummaryView.as_view(), name='user-summary'),
      path('', include(router.urls)),
 ]

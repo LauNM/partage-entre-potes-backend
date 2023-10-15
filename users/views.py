@@ -2,11 +2,15 @@ from rest_framework import status, generics, filters
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView
+
 
 from django.contrib.auth.hashers import make_password
 from .models import User
+from products.models import Product
+from friends.models import FriendList
 from .serializers import (UserSerializer, UserListSerializer, RegisterSerializer, UserProfileSerializer,
-                          UpdateUserProfileSerializer)
+                          UpdateUserProfileSerializer, UserSummarySerializer)
 from api.permissions import IsAdminAuthenticated, IsOwnerOrReadOnly
 
 """
@@ -85,3 +89,29 @@ class UpdateUserProfileViewset(ModelViewSet):
     def get_object(self):
         return self.request.user
 
+
+class UserSummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+
+        # Calculez le nombre d'amis de l'utilisateur et la somme de leurs produits
+        if hasattr(user, 'friends'):
+            friends = FriendList.objects.get(user=user).friends.all()
+            total_friends = friends.count()
+            total_friends_products = Product.objects.filter(owner__in=friends).all().count()
+        else:
+            total_friends = 0
+            total_friends_products = 0
+
+        # Calculez le nombre de produits de l'utilisateur
+        total_products = Product.objects.filter(owner=user).all().count()
+
+        data = {
+            'total_friends': total_friends,
+            'total_products': total_products,
+            'total_friends_products': total_friends_products
+        }
+
+        return Response(data)
