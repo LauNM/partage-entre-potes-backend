@@ -1,12 +1,13 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import (UserViewset, AdminUserViewset, RegisterView,
+from .views import (UserViewset, UserListViewset, AdminUserViewset, RegisterView,
                     UserProfileViewset, UpdateUserProfileViewset, UserSummaryView)
 
 
 router = routers.SimpleRouter()
 
 router.register('user', UserViewset, basename='user')
+router.register('user_list', UserListViewset, basename='user_list')
 router.register('profile', UserProfileViewset, basename='profile')
 router.register('profile/update', UpdateUserProfileViewset, basename='update_profile')
 

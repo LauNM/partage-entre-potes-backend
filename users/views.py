@@ -51,6 +51,18 @@ class UserViewset(ModelViewSet):
     queryset = User.objects.all()
 
 
+class UserListViewset(ModelViewSet):
+    serializer_class = UserListSerializer
+    permission_classes = [IsAuthenticated & IsOwnerOrReadOnly]
+    http_method_names = ['get']
+    filter_backends = [filters.OrderingFilter]
+    search_fields = ['surname']
+
+    def get_queryset(self):
+        user = self.request.user
+        return User.objects.exclude(pk=user.id)
+
+
 class UserProfileViewset(ModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = [IsAuthenticated]
